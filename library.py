@@ -80,7 +80,7 @@ class LibraryApp:
         add_button = tk.Button(#------------------------Button für Kleine Erfolge
             self.tab_wins,
             text= "Kleine Erfolge gehabt? Hier eintragen",
-            command= self.add_win_item
+            command= self.add_wins_item
         )
         add_button.pack(pady=5)
 
@@ -100,6 +100,13 @@ class LibraryApp:
             command= self.add_reflection_item
         )
         add_button.pack(pady=5)
+        #Funktionenaufruf für die Listboxen
+        self.load_books_in_listbox()
+        self.books_listbox.bind("<<ListboxSelect>>", self.on_book_select)
+        self.load_reflections_in_listbox()
+        self.reflection_listbox.bind("<<ListboxSelect>>", self.on_reflection_select)
+        self.load_wins_in_listbox()
+        self.wins_listbox.bind("<<ListboxSelect>>", self.on_win_select)
 
     def add_book_item(self):
         add_window = tk.Toplevel(self.window)
@@ -137,9 +144,11 @@ class LibraryApp:
             self.data["Bücher"].append(book_data)
             self.save_data()
             add_window.destroy()
+            self.load_books_in_listbox()  # Aktualisiere die Listbox nach dem Hinzufügen eines Buches
     
         save_button = tk.Button(add_window, text="Speichern",command=save_book)
         save_button.pack(pady=10)
+
 
     
     def add_wins_item(self):
@@ -147,7 +156,7 @@ class LibraryApp:
         add_window.title("Kleine Erfolge hinzufügen")
         add_window.geometry("400x300")
 
-        tk.Label(add_window, text="Beschreibung").pack(pady=5)
+        tk.Label(add_window, text="Kleine Erfolge(was genau):").pack(pady=5)
         beschreibung_entry = tk.Entry(add_window, width=40)
         beschreibung_entry.pack(pady=5)
 
@@ -168,7 +177,8 @@ class LibraryApp:
             self.data["Kleine Erfolge"].append(wins_data)
             self.save_data()
             add_window.destroy()
-    
+            self.load_wins_in_listbox()  # Aktualisiere die Listbox nach dem Hinzufügen eines kleinen Erfolges
+
         save_button = tk.Button(add_window, text="Speichern",command=save_wins)
         save_button.pack(pady=10)
 
@@ -192,8 +202,8 @@ class LibraryApp:
         tk.Label(add_window, text="Inhalt:").pack(pady=5)
         inhalt_entry = tk.Entry(add_window, width=40)
         inhalt_entry.pack(pady=5)
-
-        tk.Label(add_window, text="erkenntnis").pack(pady=5)
+A
+        tk.Label(add_window, text="Erkenntnis:").pack(pady=5)
         erkenntnis_entry = tk.Entry(add_window, width=40)
         erkenntnis_entry.pack(pady=5)
 
@@ -209,6 +219,7 @@ class LibraryApp:
             self.data["Tagesreflexion"].append(reflexion_data)
             self.save_data()
             add_window.destroy()
+            self.load_reflections_in_listbox()  # Aktualisiere die Listbox nach dem Hinzufügen einer Tagesreflexion
     
         save_button = tk.Button(add_window, text="Speichern",command=save_reflection)
         save_button.pack(pady=10)
@@ -226,4 +237,202 @@ class LibraryApp:
     def load_wins_in_listbox(self):
         self.wins_listbox.delete(0, tk.END)
         for wins in self.data["Kleine Erfolge"]:
-            self.reflection_listbox.insert(tk.END, wins["datum"])
+            self.wins_listbox.insert(tk.END, wins["beschreibung"])
+
+    def on_book_select(self, event):
+        selection = self.books_listbox.curselection()
+        if selection:
+            index = selection[0]
+            self.current_item = self.data["Bücher"][index]
+            self.show_book_details()
+        else:
+            return
+
+    def on_reflection_select(self, event):
+        selection = self.reflection_listbox.curselection()
+        if selection:
+            index = selection[0]
+            self.current_item = self.data["Tagesreflexion"][index]
+            self.show_reflection_details()
+        else:
+            return
+
+    def on_win_select(self, event):
+        selection = self.wins_listbox.curselection()
+        if selection:
+            index = selection[0]
+            self.current_item = self.data["Kleine Erfolge"][index]
+            self.show_win_details()
+        else:
+            return
+
+    def show_book_details(self):
+        if self.current_item:
+            details_window = tk.Toplevel(self.window)
+            details_window.title("Buchdetails")
+            details_window.geometry("400x300")
+
+            tk.Label(details_window, text=f"Titel: {self.current_item['titel']}").pack(pady=5)
+            tk.Label(details_window, text=f"Autor: {self.current_item['autor']}").pack(pady=5)
+            tk.Label(details_window, text=f"Datum: {self.current_item['datum']}").pack(pady=5)
+            tk.Label(details_window, text=f"Zusammenfassung: {self.current_item['zusammenfassung']}").pack(pady=5)
+            tk.Label(details_window, text=f"Erkenntnis: {self.current_item['erkenntnis']}").pack(pady=5)
+
+            def delete_book():
+                self.data["Bücher"].remove(self.current_item)
+                self.save_data()
+                details_window.destroy()
+                self.load_books_in_listbox()
+
+            def edit_book():
+                edit_window = tk.Toplevel(details_window)
+                edit_window.title("Buch bearbeiten")
+                edit_window.geometry("400x300")
+
+                tk.Label(edit_window, text="Buchtitel:").pack(pady=5)
+                titel_entry = tk.Entry(edit_window, width=40)
+                titel_entry.insert(0, self.current_item['titel'])
+                titel_entry.pack(pady=5)
+
+                tk.Label(edit_window, text="Autor:").pack(pady=5)
+                autor_entry = tk.Entry(edit_window, width=40)
+                autor_entry.insert(0, self.current_item['autor'])
+                autor_entry.pack(pady=5)
+
+                tk.Label(edit_window, text="Datum:").pack(pady=5)
+                datum_entry = tk.Entry(edit_window, width=40)
+                datum_entry.insert(0, self.current_item['datum'])
+                datum_entry.pack(pady=5)
+
+                tk.Label(edit_window, text="Zusammenfassung:").pack(pady=5)
+                zusammenfassung_entry = tk.Entry(edit_window, width=40)
+                zusammenfassung_entry.insert(0, self.current_item['zusammenfassung'])
+                zusammenfassung_entry.pack(pady=5)
+
+                tk.Label(edit_window, text="Erkenntnis:").pack(pady=5)
+                erkenntnis_entry = tk.Entry(edit_window, width=40)
+                erkenntnis_entry.insert(0, self.current_item['erkenntnis'])
+                erkenntnis_entry.pack(pady=5)
+
+                def save_changes():
+                    self.current_item['titel'] = titel_entry.get()
+                    self.current_item['autor'] = autor_entry.get()
+                    self.current_item['datum'] = datum_entry.get()
+                    self.current_item['zusammenfassung'] = zusammenfassung_entry.get()
+                    self.current_item['erkenntnis'] = erkenntnis_entry.get()
+                    self.save_data()
+                    edit_window.destroy()
+                    details_window.destroy()
+                    self.load_books_in_listbox()
+
+                save_button = tk.Button(edit_window, text="Speichern", command=save_changes)
+                save_button.pack(pady=5)
+
+    def show_reflection_details(self):
+        if self.current_item:
+            details_window = tk.Toplevel(self.window)
+            details_window.title("Tagesreflexion")
+            details_window.geometry("400x300")
+
+            tk.Label(details_window, text=f"Titel: {self.current_item['reflexionstitel']}").pack(pady=5)
+            tk.Label(details_window, text=f"Datum: {self.current_item['datum']}").pack(pady=5)
+            tk.Label(details_window, text=f"Inhalt: {self.current_item['inhalt']}").pack(pady=5)
+            tk.Label(details_window, text=f"Ausgangslage: {self.current_item['ausgangslage']}").pack(pady=5)
+            tk.Label(details_window, text=f"Erkenntnis: {self.current_item['erkenntnis']}").pack(pady=5)
+
+            def delete_reflection():
+                self.data["Tagesreflexion"].remove(self.current_item)
+                self.save_data()
+                details_window.destroy()
+                self.load_reflections_in_listbox()
+
+            def edit_reflection():
+                edit_window = tk.Toplevel(details_window)
+                edit_window.title("Tagesreflexion bearbeiten")
+                edit_window.geometry("400x300")
+
+                tk.Label(edit_window, text="Reflexionstitel:").pack(pady=5)
+                reflexionstitel_entry = tk.Entry(edit_window, width=40)
+                reflexionstitel_entry.insert(0, self.current_item['reflexionstitel'])
+                reflexionstitel_entry.pack(pady=5)
+
+                tk.Label(edit_window, text="Datum:").pack(pady=5)
+                datum_entry = tk.Entry(edit_window, width=40)
+                datum_entry.insert(0, self.current_item['datum'])
+                datum_entry.pack(pady=5)
+
+                tk.Label(edit_window, text="Inhalt:").pack(pady=5)
+                inhalt_entry = tk.Entry(edit_window, width=40)
+                inhalt_entry.insert(0, self.current_item['inhalt'])
+                inhalt_entry.pack(pady=5)
+
+                tk.Label(edit_window, text="Ausgangslage:").pack(pady=5)
+                ausgangslage_entry = tk.Entry(edit_window, width=40)
+                ausgangslage_entry.insert(0, self.current_item['ausgangslage'])
+                ausgangslage_entry.pack(pady=5)
+                
+                tk.Label(edit_window, text="Erkenntnis:").pack(pady=5)
+                erkenntnis_entry = tk.Entry(edit_window, width=40)
+                erkenntnis_entry.insert(0, self.current_item['erkenntnis'])
+                erkenntnis_entry.pack(pady=5)
+
+                def save_changes():
+                    self.current_item['reflexionstitel'] = reflexionstitel_entry.get()
+                    self.current_item['datum'] = datum_entry.get()
+                    self.current_item['inhalt'] = inhalt_entry.get()
+                    self.current_item['ausgangslage'] = ausgangslage_entry.get()
+                    self.current_item['erkenntnis'] = erkenntnis_entry.get()
+                    self.save_data()
+                    edit_window.destroy()
+                    details_window.destroy()
+                    self.load_reflections_in_listbox()
+
+                save_button = tk.Button(edit_window, text="Speichern", command=save_changes)
+                save_button.pack(pady=5)
+
+    def show_win_details(self):
+        if self.current_item:
+            details_window = tk.Toplevel(self.window)
+            details_window.title("Kleiner Erfolg")
+            details_window.geometry("400x300")
+
+            tk.Label(details_window, text=f"Beschreibung: {self.current_item['beschreibung']}").pack(pady=5)
+            tk.Label(details_window, text=f"Datum: {self.current_item['datum']}").pack(pady=5)
+
+            def delete_win():
+                self.data["Kleine Erfolge"].remove(self.current_item)
+                self.save_data()
+                details_window.destroy()
+                self.load_wins_in_listbox()
+
+            def edit_win():
+                edit_window = tk.Toplevel(details_window)
+                edit_window.title("Kleiner Erfolg bearbeiten")
+                edit_window.geometry("400x300")
+
+                tk.Label(edit_window, text="Beschreibung:").pack(pady=5)
+                beschreibung_entry = tk.Entry(edit_window, width=40)
+                beschreibung_entry.insert(0, self.current_item['beschreibung'])
+                beschreibung_entry.pack(pady=5)
+
+                tk.Label(edit_window, text="Datum:").pack(pady=5)
+                datum_entry = tk.Entry(edit_window, width=40)
+                datum_entry.insert(0, self.current_item['datum'])
+                datum_entry.pack(pady=5)
+
+                def save_changes():
+                    self.current_item['beschreibung'] = beschreibung_entry.get()
+                    self.current_item['datum'] = datum_entry.get()
+                    self.save_data()
+                    edit_window.destroy()
+                    details_window.destroy()
+                    self.load_wins_in_listbox()
+                
+                save_button = tk.Button(edit_window, text="Speichern", command=save_changes)
+                save_button.pack(pady=5)
+
+
+#--------------------------------Main
+if __name__ == "__main__":
+    app = LibraryApp()
+    app.window.mainloop()

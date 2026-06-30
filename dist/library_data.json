@@ -1,0 +1,32 @@
+{
+  "Bücher": [
+    {
+      "titel": "Project Hail Mary",
+      "autor": "Andy Weir",
+      "datum": "30.06.2026",
+      "zusammenfassung": "Dr. Grace macht sich auf dem Weg zum Universum um die Welt von der Astrophagen zu schützen. Dabei trifft er den Außerirdische Eridianer namens Rocky.",
+      "erkenntnis": "Man sollte Freundschaft wert schätzen"
+    }
+  ],
+  "Tagesreflexion": [
+    {
+      "reflexionstitel": "Was habe ich heute alles gelernt",
+      "ausgangslage": "",
+      "datum": "30.06.2026",
+      "inhalt": "",
+      "erkenntnis": ""
+    }
+  ],
+  "Kleine Erfolge": [
+    {
+      "beschreibung": "Ich habe den Programm jetzt fertig gebaut!",
+      "datum": "30.06.2026",
+      "ergebnis": "Mein App Self-Improvement Library ist nun fertig programmiert"
+    },
+    {
+      "beschreibung": "App ist fertig",
+      "datum": "30.06.2026",
+      "ergebnis": "Self-Improvement App fertig gebaut und beim Testen"
+    }
+  ]
+}
