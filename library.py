@@ -398,6 +398,7 @@ A
 
             tk.Label(details_window, text=f"Beschreibung: {self.current_item['beschreibung']}").pack(pady=5)
             tk.Label(details_window, text=f"Datum: {self.current_item['datum']}").pack(pady=5)
+            tk.Label(details_window, text=f"Ergebnis: {self.current_item['ergebnis']}").pack(pady=5)
 
             def delete_win():
                 self.data["Kleine Erfolge"].remove(self.current_item)
@@ -420,9 +421,15 @@ A
                 datum_entry.insert(0, self.current_item['datum'])
                 datum_entry.pack(pady=5)
 
+                tk.Label(edit_window, text="Ergebnis:").pack(pady=5)
+                ergebnis_entry = tk.Entry(edit_window, width=40)
+                ergebnis_entry.insert(0, self.current_item['ergebnis'])
+                ergebnis_entry.pack(pady=5)
+
                 def save_changes():
                     self.current_item['beschreibung'] = beschreibung_entry.get()
                     self.current_item['datum'] = datum_entry.get()
+                    self.current_item['ergebnis'] = ergebnis_entry.get()
                     self.save_data()
                     edit_window.destroy()
                     details_window.destroy()
